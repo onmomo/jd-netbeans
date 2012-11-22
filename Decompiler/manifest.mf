@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module: nb.decompiler
+OpenIDE-Module-Localizing-Bundle: nb/decompiler/Bundle.properties
+
