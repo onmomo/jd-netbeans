@@ -11,7 +11,7 @@ import org.openide.awt.StatusDisplayer;
 public class JavaDecompiler {
     
 //    public static final String JD_NBLIB = "libjd-netbeans";
-    public static final String JD_NBLIB = "jd-intellij";
+    public static final String JD_NBLIB = "jd-netbeans";
 
     public JavaDecompiler() {
         try {
