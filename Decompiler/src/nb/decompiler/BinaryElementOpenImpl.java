@@ -62,6 +62,7 @@ public class BinaryElementOpenImpl implements BinaryElementOpen {
         if (classPath != null) {
             FileObject fileObject = classPath.findResource(toOpen.getQualifiedName().replace('.', '/') + ".class");
             if (fileObject != null) {
+                // TODO do something with it...
                 String decompiledClass = JavaDecompilerService.getInstance().decompile(fileObject);
                 return true;
             }

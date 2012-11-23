@@ -1,16 +1,10 @@
 package nb.decompiler;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import jd.ide.intellij.JavaDecompiler;
-import org.netbeans.api.java.classpath.ClassPath;
-import org.netbeans.api.java.source.ClasspathInfo;
-import org.netbeans.api.java.source.JavaSource;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileStateInvalidException;
 import org.openide.filesystems.FileUtil;
-import org.openide.filesystems.JarFileSystem;
 import org.openide.util.Exceptions;
 
 /**
@@ -31,29 +25,16 @@ public class JavaDecompilerService {
 
     public String decompile(FileObject fileObject) {
         try {
-            if (FileUtil.isArchiveFile(fileObject.getFileSystem().getRoot())) {
-                String basePath = fileObject.getFileSystem().getRoot().getPath();
-                return javaDecompiler.decompile(basePath, fileObject.getName());
-            }
-            
-            
-            
-            String classPathRoot = fileObject.getParent().getPath();
-            //            String classPathRoot = "C:/Users/Chris/Desktop";
-            //        String internalClassName = getRelativePath(new File(fileObject.getPath()), new File(classPathRoot), '/');
-            //            String internalClassName = getRelativePath(new File("C:/Users/Chris/Desktop/DefaultServiceManager.class"), new File(classPathRoot), '/');
-            //            String decompiled = javaDecompiler.decompile(classPathRoot, internalClassName);
-            String displayName = FileUtil.getFileDisplayName(fileObject);
-            String fileDisplayName = FileUtil.getFileDisplayName(fileObject);
-            File toFile = FileUtil.toFile(fileObject);
-            String decompiled = javaDecompiler.decompile(classPathRoot, "");
-            //            "C:\Users\Chris\Desktop\DefaultServiceManager.class"
-            if (validContent(decompiled)) {
-                return decompiled;
-            }
-            // fallback
-            //        return ClsFileImpl.decompile(PsiManager.getInstance(project), virtualFile);
-            return null;
+            final String internalClassname = fileObject.getPath();
+            final FileObject parent = fileObject.getFileSystem().getRoot();
+            final File jarFile = FileUtil.archiveOrDirForURL(parent.toURL());
+            final FileObject jarFileObject = FileUtil.toFileObject(jarFile);
+            if (FileUtil.isArchiveFile(jarFileObject)) {
+                final String decompiled = javaDecompiler.decompile(jarFileObject.getPath(), internalClassname);
+                if (validContent(decompiled)) {
+                    return decompiled;
+                }
+            } //else { handle non jar files? }
         } catch (FileStateInvalidException ex) {
             Exceptions.printStackTrace(ex);
         }
