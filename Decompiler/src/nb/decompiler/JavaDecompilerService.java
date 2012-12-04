@@ -31,7 +31,7 @@ public class JavaDecompilerService {
             final FileObject jarFileObject = FileUtil.toFileObject(jarFile);
             if (FileUtil.isArchiveFile(jarFileObject)) {
                 final String decompiled = javaDecompiler.decompile(jarFileObject.getPath(), internalClassname);
-                if (validContent(decompiled)) {
+                 if (validContent(decompiled)) {
                     return decompiled;
                 }
             } //else { handle non jar files? }

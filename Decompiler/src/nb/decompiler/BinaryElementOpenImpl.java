@@ -38,14 +38,20 @@
  */
 package nb.decompiler;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.lang.model.element.Element;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.java.source.ClasspathInfo;
 import org.netbeans.api.java.source.ClasspathInfo.PathKind;
 import org.netbeans.api.java.source.ElementHandle;
+import org.netbeans.api.java.source.ui.ElementOpen;
 import org.netbeans.modules.java.BinaryElementOpen;
 import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileSystem;
+import org.openide.filesystems.FileUtil;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -53,7 +59,7 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Sandip V. Chitale (Sandip.Chitale@Sun.Com)
  */
-@ServiceProvider(service=BinaryElementOpen.class, position=0)
+@ServiceProvider(service = BinaryElementOpen.class, position = 0)
 public class BinaryElementOpenImpl implements BinaryElementOpen {
 
     @Override
@@ -62,12 +68,22 @@ public class BinaryElementOpenImpl implements BinaryElementOpen {
         if (classPath != null) {
             FileObject fileObject = classPath.findResource(toOpen.getQualifiedName().replace('.', '/') + ".class");
             if (fileObject != null) {
-                // TODO do something with it...
                 String decompiledClass = JavaDecompilerService.getInstance().decompile(fileObject);
-                return true;
+                if (!decompiledClass.isEmpty()) {
+                    try {
+                        final FileSystem fs = FileUtil.createMemoryFileSystem();
+                        final FileObject createData = fs.getRoot().createData("decompiled", "java");
+                        final OutputStream outputstream = createData.getOutputStream();
+                        outputstream.write(decompiledClass.getBytes());
+                        outputstream.close();
+                        ElementOpen.open(createData, toOpen);
+                        return true;
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
             }
         }
         return false;
     }
-
 }
