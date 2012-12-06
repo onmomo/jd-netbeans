@@ -1,32 +1,13 @@
 package jd.ide.intellij.config;
 
-//import com.intellij.openapi.components.ApplicationComponent;
-//import com.intellij.openapi.components.PersistentStateComponent;
-//import com.intellij.openapi.components.State;
-//import com.intellij.openapi.components.Storage;
-//import com.intellij.openapi.options.Configurable;
-//import com.intellij.openapi.options.ConfigurationException;
-//import com.intellij.openapi.util.IconLoader;
-//import org.apache.commons.lang.StringUtils;
+
 import javax.swing.*;
 
-/**
- * Configuration component for Java Decompiler.
- * <p/>
- * Holds the configuration of the plugin application wise.
- */
-//@State(
-//        name = JDPluginConfigurationPane.COMPONENT_NAME,
-//        storages = {@Storage(id = "other", file = "$APP_CONFIG$/java.decompiler.xml")}
-//)
 public class JDPluginComponent {
 
     public static final String SHOW_METADATA_ATTRIBUTE = "displayMetadata";
     public static final String SHOW_LINE_NUMBERS_ATTRIBUTE = "displayLineNumbers";
-    public static final String JD_CONFIGURATION_CONFIG_ELEMENT = "jd-configuration";
-    public static final String JD_INTELLIJ_ID = "jd-intellij";
 
-//    private JDPluginConfigurationPane configPane;
     private boolean showLineNumbersEnabled = true;
     private boolean showMetadataEnabled = true;
 
