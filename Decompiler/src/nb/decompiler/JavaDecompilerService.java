@@ -6,21 +6,18 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileStateInvalidException;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Java Decompiler Service.
  */
+@ServiceProvider(service=JavaDecompilerService.class)
 public class JavaDecompilerService {
 
-    private static final JavaDecompilerService instance = new JavaDecompilerService();
     private final JavaDecompiler javaDecompiler;
 
-    private JavaDecompilerService() {
+    public JavaDecompilerService() {
         javaDecompiler = new JavaDecompiler();
-    }
-
-    public static synchronized JavaDecompilerService getInstance() {
-        return instance;
     }
 
     public String decompile(FileObject fileObject) {

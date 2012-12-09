@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import javax.swing.text.Document;
+import nb.decompiler.JavaDecompilerRefreshSupportService;
 import nb.decompiler.JavaDecompilerService;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.java.source.ClasspathInfo;
@@ -20,6 +21,7 @@ import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(
@@ -32,54 +34,49 @@ displayName = "#CTL_DecompileViewListener")
 @Messages("CTL_DecompileViewListener=Decompile View")
 public final class DecompileViewListener implements ActionListener {
 
-//    private final DataObject context;
-//    private final JavaDecompilerService javaDecompilerService;
-//    private ClassPath classpath;
+    private final DataObject context;
+    private final JavaDecompilerRefreshSupportService javaDecompilerRefreshSupportService;
 
     public DecompileViewListener(DataObject context) {
-//        this.context = context;
-//        javaDecompilerService = JavaDecompilerService.getInstance();
+        this.context = context;
+         javaDecompilerRefreshSupportService = Lookup.getDefault().lookup(JavaDecompilerRefreshSupportService.class);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        context.getNodeDelegate();
+        final FileObject fileObject = context.getPrimaryFile();
+        final JavaSource javaSource = JavaSource.forFileObject(fileObject); 
         
-        
-//        context.getNodeDelegate();
-//        final FileObject fileObject = context.getPrimaryFile();
-//        final JavaSource javaSource = JavaSource.forFileObject(fileObject); 
-//        classpath = javaSource.getClasspathInfo().getClassPath(ClasspathInfo.PathKind.COMPILE);
-//        
-//        if (javaSource == null) {
-//            StatusDisplayer.getDefault().setStatusText("Not a Java file: " + fileObject.getPath());
-//        } else {
-//            try {
-//                javaSource.runUserActionTask(new Task<CompilationController>() {
-//
-//                    @Override
-//                    public void run(final CompilationController compilationController) throws Exception {
-//                        compilationController.toPhase(Phase.ELEMENTS_RESOLVED);
-//                        
-//                        ClassPath classPath = ClassPath.getClassPath(fileObject, ClassPath.COMPILE);
-//                        FileObject[] roots = classPath.getRoots();
-//                        for (FileObject fileObject1 : roots) {
-//                            System.out.println(fileObject1.getPath());
-//                        }
-//                        Document document = compilationController.getDocument();
-//                        if (document != null) {
-//                            StatusDisplayer.getDefault().setStatusText("Hurray, the Java file is open!");
-//                            String decompile = javaDecompilerService.decompile(fileObject);
-//                            System.out.println(decompile);
-//                        } else {
-//                            StatusDisplayer.getDefault().setStatusText("The Java file is closed!");
-//                            String decompile = javaDecompilerService.decompile(fileObject);
-//                            System.out.println(decompile);
-//                        }
-//                    }
-//                }, true);
-//            } catch (IOException ex) {
-//                Exceptions.printStackTrace(ex);
-//            }
-//        }
+        if (javaSource == null) {
+            StatusDisplayer.getDefault().setStatusText("Not a Java file: " + fileObject.getPath());
+        } else {
+            try {
+                javaSource.runUserActionTask(new Task<CompilationController>() {
+
+                    @Override
+                    public void run(final CompilationController compilationController) throws Exception {
+                        compilationController.toPhase(Phase.ELEMENTS_RESOLVED);
+                        
+                        ClassPath classPath = ClassPath.getClassPath(fileObject, ClassPath.COMPILE);
+                        FileObject[] roots = classPath.getRoots();
+                        for (FileObject fileObject1 : roots) {
+                            System.out.println(fileObject1.getPath());
+                        }
+                        Document document = compilationController.getDocument();
+                        if (document != null) {
+                            
+                            StatusDisplayer.getDefault().setStatusText("Hurray, the Java file is open!");
+                        } else {
+                            StatusDisplayer.getDefault().setStatusText("The Java file is closed!");
+                        }
+                    }
+                }, true);
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
     }
+    
+    
 }
